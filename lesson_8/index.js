@@ -24,7 +24,7 @@ app.get("/header", (req, res) => {
   const name = req.header("name");
   res.send(`<h1>User id: ${id}</h1><h1>User name: ${name}</h1>`);
 });
-app.get("/body-parser", (req, res) => {
+app.post("/body-parser", (req, res) => {
   // const name = req.body.name;
   // const email = req.body.email;
   // const phone = req.body.phone;
@@ -36,6 +36,17 @@ app.get("/body-parser", (req, res) => {
     phone: ${phone} <br/>
     subject: ${subject}
   `);
+});
+
+app.get("/register", (req, res) => {
+  res.sendFile(__dirname + "/index.html");
+});
+app.post("/register", (req, res) => {
+  const { name, email, password } = req.body;
+  res.send(`
+    Name:${name} <br/>
+    Email: ${email}<br/>
+    Password: ${password}`);
 });
 
 app.listen(3000, () => {
