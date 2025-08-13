@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Geometry Calculator</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      nav ul {
+        list-style: none;
+        padding: 0;
+        display: flex;
+        gap: 15px;
+      }
+      .field {
+        margin-bottom: 15px;
+      }
+      label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+      }
+      input {
+        padding: 8px;
+        width: 100%;
+        box-sizing: border-box;
+      }
+      button {
+        padding: 10px 15px;
+        background-color: #4caf50;
+        color: white;
+        border: none;
+        cursor: pointer;
+      }
+      button:hover {
+        background-color: #45a049;
+      }
+    </style>
+  </head>
+  <body>
+    <nav>
+      <ul>
+        <li><a href="/">Home</a></li>
+        <li><a href="/triangle">Triangle Calculator</a></li>
+        <li><a href="/circle">Circle Calculator</a></li>
+      </ul>
+    </nav>
+
+    <h1>Triangle Area Calculator</h1>
+    <form action="/triangle" method="POST">
+      <div class="field">
+        <label for="base">Base:</label>
+        <input
+          id="base"
+          name="base"
+          type="number"
+          placeholder="Enter base"
+          required
+          step="0.01"
+          min="0.01"
+        />
+      </div>
+      <div class="field">
+        <label for="height">Height:</label>
+        <input
+          id="height"
+          name="height"
+          type="number"
+          placeholder="Enter height"
+          required
+          step="0.01"
+          min="0.01"
+        />
+      </div>
+      <button type="submit">Calculate Area</button>
+    </form>
+  </body>
+</html>
