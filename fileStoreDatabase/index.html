@@ -42,6 +42,12 @@
       .upload-form button:hover {
         background: #45a049;
       }
+      .name {
+        padding: 12px 20px;
+        width: 70%;
+        border: 1px solid #ccc;
+        margin-bottom: 10px;
+      }
     </style>
   </head>
   <body>
@@ -52,7 +58,8 @@
       enctype="multipart/form-data"
     >
       <h2>Upload File</h2>
-      <input type="file" name="myfile" required />
+      <input type="text" name="name" placeholder="enter name" class="name" />
+      <input type="file" name="image" required />
       <button type="submit">Upload</button>
     </form>
   </body>
