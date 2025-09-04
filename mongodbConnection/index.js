@@ -93,6 +93,44 @@ app.post("/products", async (req, res) => {
   }
 });
 
+app.get("/products", async (req, res) => {
+  try {
+    const products = await Product.find();
+    if (products) {
+      res.status(200).send({
+        message: "Return All products",
+        status: true,
+        data: products,
+      });
+    } else {
+      res
+        .status(404)
+        .send({ message: "Products data is not found", status: false });
+    }
+  } catch (error) {
+    res.status(500).send({ message: error.message });
+  }
+});
+app.get("/products/:id", async (req, res) => {
+  try {
+    const id = req.params.id;
+    const product = await Product.findOne({ _id: id });
+    if (product) {
+      res.status(200).send({
+        message: "Return a single product",
+        status: true,
+        data: product,
+      });
+    } else {
+      res
+        .status(404)
+        .send({ message: "Product data is not found", status: false });
+    }
+  } catch (error) {
+    res.status(500).send({ message: error.message });
+  }
+});
+
 app.listen(port, async () => {
   console.log(`Server is running at http://localhost:${port}`);
   await connectDB();
