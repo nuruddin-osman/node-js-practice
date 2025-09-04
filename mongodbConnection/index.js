@@ -101,9 +101,9 @@ app.get("/products", async (req, res) => {
     if (price && title) {
       products = await Product.find({
         $or: [{ price: price }, { title: title }],
-      });
+      }).sort({ price: 1 });
     } else {
-      products = await Product.find();
+      products = await Product.find().sort({ price: 1 });
     }
 
     if (products) {
@@ -130,6 +130,27 @@ app.get("/products/:id", async (req, res) => {
         message: "Return a single product",
         status: true,
         data: product,
+      });
+    } else {
+      res
+        .status(404)
+        .send({ message: "Product data is not found", status: false });
+    }
+  } catch (error) {
+    res.status(500).send({ message: error.message });
+  }
+});
+
+app.delete("/products/:id", async (req, res) => {
+  try {
+    const id = req.params.id;
+    // const deletedProduct = await Product.deleteOne({ _id: id });
+    const deletedProduct = await Product.findByIdAndDelete({ _id: id });
+    if (deletedProduct) {
+      res.status(200).send({
+        message: "Return a deleted product",
+        status: true,
+        data: deletedProduct,
       });
     } else {
       res
