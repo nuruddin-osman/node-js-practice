@@ -96,10 +96,11 @@ app.post("/products", async (req, res) => {
 app.get("/products", async (req, res) => {
   try {
     const price = req.query.price;
+    const title = req.query.title;
     let products;
-    if (price) {
+    if (price && title) {
       products = await Product.find({
-        price: { $in: price },
+        $or: [{ price: price }, { title: title }],
       });
     } else {
       products = await Product.find();
