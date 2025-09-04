@@ -4,6 +4,22 @@ const app = express();
 
 const port = 3002;
 
+//mongoos schema
+
+const productSchema = new mongoose.Schema({
+  name: String,
+  email: String,
+  age: Number,
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
+});
+
+//mongoose models
+
+const Product = mongoose.model("products", productSchema);
+
 // mongoose
 //   .connect("mongodb://127.0.0.1:27017/testProductDb")
 //   .then(() => console.log("Db is connected"))
