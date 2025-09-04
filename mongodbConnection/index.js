@@ -2,14 +2,17 @@ const express = require("express");
 const mongoose = require("mongoose");
 const app = express();
 
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
 const port = 3002;
 
 //mongoos schema
 
 const productSchema = new mongoose.Schema({
-  name: String,
-  email: String,
-  age: Number,
+  title: { type: String, required: true },
+  price: { type: Number, required: true },
+  description: { type: String, required: true },
   createdAt: {
     type: Date,
     default: Date.now,
@@ -41,6 +44,53 @@ const connectDB = async () => {
 
 app.get("/", (req, res) => {
   res.send("This is an home page");
+});
+
+// app.post("/products", async (req, res) => {
+//   try {
+//     const productData = await Product.insertMany([
+//       {
+//         title: "iPhone 16",
+//         price: 58000,
+//         description: "This is an iPhone pad",
+//       },
+//       {
+//         title: "iPhone 17",
+//         price: 58000,
+//         description: "This is an iPhone pad",
+//       },
+//       {
+//         title: "iPhone 18",
+//         price: 58000,
+//         description: "This is an iPhone pad",
+//       },
+//     ]);
+//     res.status(201).send(productData);
+//   } catch (error) {
+//     res.status(500).send({ message: error.message });
+//   }
+// });
+
+app.post("/products", async (req, res) => {
+  try {
+    const { title, price, description } = req.body;
+
+    // const newProduct = new Product({
+    //   title: title,
+    //   price: price,
+    //   description: description,
+    // });
+    const newProduct = new Product({
+      title,
+      price,
+      description,
+    });
+
+    const productData = await newProduct.save();
+    res.status(201).send(productData);
+  } catch (error) {
+    res.status(500).send({ message: error.message });
+  }
 });
 
 app.listen(port, async () => {
