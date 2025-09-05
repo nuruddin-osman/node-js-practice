@@ -141,6 +141,35 @@ app.get("/products/:id", async (req, res) => {
   }
 });
 
+app.put("/products/:id", async (req, res) => {
+  try {
+    const id = req.params.id;
+    const { title, price, description } = req.body;
+    // const productUpdate = await Product.updateOne
+    const productUpdate = await Product.findByIdAndUpdate(
+      { _id: id },
+      {
+        title: title,
+        price: price,
+        description: description,
+      },
+      { new: true }
+    );
+
+    if (productUpdate) {
+      res.status(200).send({
+        status: true,
+        message: "Product update successfull",
+        data: productUpdate,
+      });
+    } else {
+      res.status(404).send({ message: "Product is not updated" });
+    }
+  } catch (error) {
+    res.status(500).send({ message: error.message });
+  }
+});
+
 app.delete("/products/:id", async (req, res) => {
   try {
     const id = req.params.id;
