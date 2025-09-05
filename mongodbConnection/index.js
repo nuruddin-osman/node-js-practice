@@ -10,8 +10,20 @@ const port = 3002;
 //mongoos schema
 
 const productSchema = new mongoose.Schema({
-  title: { type: String, required: true },
-  price: { type: Number, required: true },
+  title: {
+    type: String,
+    required: [true, "Title is must medatory"],
+    minLength: [5, "This Title minimum length of 5 charecter"],
+    maxLength: [30, "This Title maximum length of 30 charecter"],
+    trim: true,
+    lowercase: true,
+  },
+  price: {
+    type: Number,
+    required: [true, "Price must be included"],
+    min: [20000, "Price must be a getter then 20000"],
+    max: [60000, "Price must be a less then 60000"],
+  },
   description: { type: String, required: true },
   createdAt: {
     type: Date,
