@@ -24,7 +24,28 @@ const productSchema = new mongoose.Schema({
     min: [20000, "Price must be a getter then 20000"],
     max: [60000, "Price must be a less then 60000"],
   },
-  description: { type: String, required: true },
+  phone: {
+    type: String,
+    validate: {
+      validator: function (v) {
+        return /\d{3}-\d{3}-\d{4}/.test(v);
+      },
+      message: (props) => `${props.value} is not a valid phone number!`,
+    },
+    required: [true, "User phone number required"],
+  },
+  description: {
+    type: String,
+    validate: {
+      validator: function (v) {
+        return v.length > 50;
+      },
+      message: function (props) {
+        return `'${props.value}' must have length 50 got `;
+      },
+    },
+    required: true,
+  },
   createdAt: {
     type: Date,
     default: Date.now,
@@ -85,7 +106,7 @@ app.get("/", (req, res) => {
 
 app.post("/products", async (req, res) => {
   try {
-    const { title, price, description } = req.body;
+    const { title, price, description, phone } = req.body;
 
     // const newProduct = new Product({
     //   title: title,
@@ -96,6 +117,7 @@ app.post("/products", async (req, res) => {
       title,
       price,
       description,
+      phone,
     });
 
     const productData = await newProduct.save();
