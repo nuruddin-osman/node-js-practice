@@ -2,6 +2,8 @@ require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
+const md5 = require("md5");
+
 const app = express();
 
 const User = require("./models/user.model");
@@ -27,14 +29,15 @@ app.get("/", (req, res) => {
 
 app.post("/register", async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const email = req.body.email;
+    const password = md5(req.body.password);
     const newUser = new User({
       email,
       password,
     });
     if (newUser) {
       await newUser.save();
-      res.status(201).send(newUser);
+      res.status(201).send({ status: true, newUser });
     } else {
       res.status(404).send({ message: "User is not created" });
     }
@@ -44,11 +47,12 @@ app.post("/register", async (req, res) => {
 });
 
 app.post("/login", async (req, res) => {
-  const { email, password } = req.body;
+  const email = req.body.email;
+  const password = md5(req.body.password);
   try {
     const user = await User.findOne({ email: email });
     if (user && user.password === password) {
-      res.status(201).send(user);
+      res.status(201).send({ status: true, user });
     } else {
       res.status(404).send({ message: "email or password invalid" });
     }
