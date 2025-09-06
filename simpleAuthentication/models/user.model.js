@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
+const encrypt = require("mongoose-encryption");
 
-const usersSchema = mongoose.Schema({
+const usersSchema = new mongoose.Schema({
   email: {
     type: String,
     required: [true, "Eamil must nedded"],
@@ -16,6 +17,13 @@ const usersSchema = mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+});
+
+const encKey = process.env.ENCRYPTION_KEY;
+
+usersSchema.plugin(encrypt, {
+  secret: encKey,
+  encryptedFields: ["password"],
 });
 
 module.exports = mongoose.model("User", usersSchema);
