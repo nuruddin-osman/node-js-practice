@@ -2,9 +2,12 @@ require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
-const md5 = require("md5");
+const bcrypt = require("bcrypt");
+
+// const md5 = require("md5");
 
 const app = express();
+const saltRounds = 10;
 
 const User = require("./models/user.model");
 const connectDB = async () => {
@@ -30,17 +33,23 @@ app.get("/", (req, res) => {
 app.post("/register", async (req, res) => {
   try {
     const email = req.body.email;
-    const password = md5(req.body.password);
-    const newUser = new User({
-      email,
-      password,
+    // const password = md5(req.body.password);
+    const password = req.body.password;
+    bcrypt.hash(password, saltRounds, async (err, hash) => {
+      if (err) {
+        return res.status(500).send({ message: "Error hashing password" });
+      }
+      const newUser = new User({
+        email,
+        password: hash,
+      });
+      if (newUser) {
+        await newUser.save();
+        res.status(201).send({ status: true, newUser });
+      } else {
+        res.status(404).send({ message: "User is not created" });
+      }
     });
-    if (newUser) {
-      await newUser.save();
-      res.status(201).send({ status: true, newUser });
-    } else {
-      res.status(404).send({ message: "User is not created" });
-    }
   } catch (error) {
     res.status(500).send({ message: error.message });
   }
@@ -48,11 +57,17 @@ app.post("/register", async (req, res) => {
 
 app.post("/login", async (req, res) => {
   const email = req.body.email;
-  const password = md5(req.body.password);
+  // const password = md5(req.body.password);
+  const password = req.body.password;
   try {
     const user = await User.findOne({ email: email });
-    if (user && user.password === password) {
-      res.status(201).send({ status: true, user });
+
+    if (user) {
+      bcrypt.compare(password, user.password, (err, result) => {
+        if (result === true) {
+          res.status(201).send({ status: true, user });
+        }
+      });
     } else {
       res.status(404).send({ message: "email or password invalid" });
     }
