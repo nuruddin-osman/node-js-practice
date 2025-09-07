@@ -31,6 +31,9 @@ app.use(
   })
 );
 
+app.use(passport.initialize()); // jokhon route a call dibo tokhon passport initialized hobe.
+app.use(passport.session()); // jate kore passport, express-session er sathe use korte pari
+
 app.get("/register", (req, res) => {
   res.render("register");
 });
