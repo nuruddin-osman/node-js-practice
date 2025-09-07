@@ -4,6 +4,7 @@ const express = require("express");
 const app = express();
 const cors = require("cors");
 const ejs = require("ejs");
+const User = require("./models/users.models");
 
 app.set("view engine", "ejs");
 app.use(cors());
@@ -13,11 +14,22 @@ app.use(express.urlencoded({ extended: true }));
 app.get("/register", (req, res) => {
   res.render("register");
 });
-app.post("/register", (req, res) => {
-  const name = req.body.name;
-  res.send({
-    name,
-  });
+app.post("/register", async (req, res) => {
+  try {
+    const { username, password } = req.body;
+    const user = await User.findOne({ username: username });
+    if (user) {
+      return res.status(400).send("user already exists");
+    }
+    const newUser = new User({
+      username: username,
+      password: password,
+    });
+    await newUser.save();
+    res.status(201).send("New user created");
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
 });
 app.get("/login", (req, res) => {
   res.render("login");
