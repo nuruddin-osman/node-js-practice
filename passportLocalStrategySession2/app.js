@@ -35,7 +35,14 @@ app.use(
 app.use(passport.initialize()); // jokhon route a call dibo tokhon passport initialized hobe.
 app.use(passport.session()); // jate kore passport, express-session er sathe use korte pari
 
-app.get("/register", (req, res) => {
+const checkLoggedIn = (req, res, next) => {
+  if (req.isAuthenticated()) {
+    return res.redirect("/profile");
+  }
+  next();
+};
+
+app.get("/register", checkLoggedIn, (req, res) => {
   res.render("register");
 });
 app.post("/register", async (req, res) => {
@@ -57,7 +64,7 @@ app.post("/register", async (req, res) => {
     res.status(500).send(error.message);
   }
 });
-app.get("/login", (req, res) => {
+app.get("/login", checkLoggedIn, (req, res) => {
   res.render("login");
 });
 app.post(
@@ -67,11 +74,27 @@ app.post(
     successRedirect: "/profile",
   })
 );
-app.get("/profile", (req, res) => {
+
+const checkAuthenticated = (req, res, next) => {
+  if (req.isAuthenticated()) {
+    return next();
+  }
+  res.redirect("/login");
+};
+app.get("/profile", checkAuthenticated, (req, res) => {
   res.render("profile");
 });
-app.get("/logout", (req, res) => {
-  res.redirect("/");
+app.get("/logout", function (req, res, next) {
+  try {
+    req.logout((err) => {
+      if (err) {
+        return next(err);
+      }
+      res.redirect("/");
+    });
+  } catch (error) {
+    res.status(500).send(error);
+  }
 });
 
 module.exports = app;
