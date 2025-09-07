@@ -1,5 +1,6 @@
 require("dotenv").config();
 require("./config/database");
+require("./config/passport");
 const express = require("express");
 const app = express();
 const cors = require("cors");
@@ -50,7 +51,7 @@ app.post("/register", async (req, res) => {
         password: hash,
       });
       await newUser.save();
-      res.status(201).send("New user created");
+      res.status(201).redirect("/login");
     });
   } catch (error) {
     res.status(500).send(error.message);
@@ -59,9 +60,13 @@ app.post("/register", async (req, res) => {
 app.get("/login", (req, res) => {
   res.render("login");
 });
-app.post("/login", (req, res) => {
-  res.send("hei");
-});
+app.post(
+  "/login",
+  passport.authenticate("local", {
+    failureRedirect: "/login",
+    successRedirect: "/profile",
+  })
+);
 app.get("/profile", (req, res) => {
   res.render("profile");
 });
