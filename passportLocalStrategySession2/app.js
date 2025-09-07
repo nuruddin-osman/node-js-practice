@@ -6,6 +6,9 @@ const cors = require("cors");
 const ejs = require("ejs");
 const User = require("./models/users.models");
 
+const bcrypt = require("bcrypt");
+const saltRounds = 10;
+
 app.set("view engine", "ejs");
 app.use(cors());
 app.use(express.json());
@@ -21,12 +24,14 @@ app.post("/register", async (req, res) => {
     if (user) {
       return res.status(400).send("user already exists");
     }
-    const newUser = new User({
-      username: username,
-      password: password,
+    bcrypt.hash(password, saltRounds, async (err, hash) => {
+      const newUser = new User({
+        username: username,
+        password: hash,
+      });
+      await newUser.save();
+      res.status(201).send("New user created");
     });
-    await newUser.save();
-    res.status(201).send("New user created");
   } catch (error) {
     res.status(500).send(error.message);
   }
