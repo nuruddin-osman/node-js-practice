@@ -1,6 +1,47 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const Register = () => {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    axios
+      .get("http://localhost:4002/profile", {
+        headers: {
+          Authorization: token,
+        },
+      })
+      .then((res) => {
+        navigate("/profile");
+        console.log(res);
+      })
+      .catch((err) => {
+        navigate("/register");
+        console.log(err);
+      });
+  }, []);
+
+  const handleRegister = (e) => {
+    e.preventDefault();
+    axios
+      .post("http://localhost:4002/register", {
+        username,
+        password,
+      })
+      .then(() => {
+        navigate("/login");
+        console.log("User create successfull");
+      })
+      .catch((error) => {
+        navigate("/register");
+        console.log(error);
+      });
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
       <div className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden">
@@ -23,8 +64,8 @@ const Register = () => {
                   name="username"
                   type="text"
                   required
-                  //   value={formData.username}
-                  //   onChange={handleChange}
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
                   className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition duration-300"
                   placeholder="Choose a username"
                 />
@@ -54,8 +95,8 @@ const Register = () => {
                   name="password"
                   type="password"
                   required
-                  //   value={formData.password}
-                  //   onChange={handleChange}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition duration-300"
                   placeholder="Create a password"
                 />
@@ -78,6 +119,7 @@ const Register = () => {
             {/* Submit Button */}
             <button
               type="submit"
+              onClick={handleRegister}
               className="w-full bg-gradient-to-r from-blue-600 to-indigo-700 text-white py-3 px-4 rounded-lg font-medium hover:from-blue-700 hover:to-indigo-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-300 transform hover:-translate-y-0.5"
             >
               Register Now

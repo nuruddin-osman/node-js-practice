@@ -1,10 +1,48 @@
-import React, { useState } from "react";
+import axios from "axios";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  console.log(username, password);
+  const navigate = useNavigate();
 
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    axios
+      .get("http://localhost:4002/profile", {
+        headers: {
+          Authorization: token,
+        },
+      })
+      .then((res) => {
+        navigate("/profile");
+        console.log(res);
+      })
+      .catch((err) => {
+        navigate("/login");
+        console.log(err);
+      });
+  }, []);
+
+  const handleLogin = (e) => {
+    e.preventDefault();
+    axios
+      .post("http://localhost:4002/login", {
+        username,
+        password,
+      })
+      .then((user) => {
+        const users = user.data.data.token;
+        localStorage.setItem("token", users);
+        navigate("/profile");
+        console.log("User login successfull");
+      })
+      .catch((error) => {
+        navigate("/login");
+        console.log(error);
+      });
+  };
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
       <div className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden">
@@ -81,6 +119,7 @@ const Login = () => {
             {/* Submit Button */}
             <button
               type="submit"
+              onClick={handleLogin}
               className="w-full bg-gradient-to-r from-blue-600 to-indigo-700 text-white py-3 px-4 rounded-lg font-medium hover:from-blue-700 hover:to-indigo-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-300 transform hover:-translate-y-0.5"
             >
               Login Now
