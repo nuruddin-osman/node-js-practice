@@ -1,6 +1,7 @@
 const express = require("express");
 const app = express();
 require("dotenv").config();
+require("./config/database");
 
 app.post("/register", (req, res) => {
   res.send("register");
