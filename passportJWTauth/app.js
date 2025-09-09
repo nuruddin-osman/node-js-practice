@@ -1,17 +1,19 @@
 const express = require("express");
-const { message } = require("statuses");
 const User = require("./models/user.models");
 const app = express();
 require("dotenv").config();
 require("./config/database");
+require("./config/passport");
 const cors = require("cors");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const passport = require("passport");
 const saltRounds = 10;
 
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(passport.initialize());
 
 app.post("/register", async (req, res) => {
   try {
@@ -85,7 +87,24 @@ app.post("/login", async (req, res) => {
     res.status(500).send(error.message);
   }
 });
-app.get("/profile", (req, res) => {
-  res.send("This is an profile");
-});
+app.get(
+  "/profile",
+  passport.authenticate("jwt", { session: false }),
+  function (req, res) {
+    try {
+      return res.status(200).send({
+        status: true,
+        message: "Profile retrieved successfully",
+        data: {
+          user: {
+            id: req.user._id,
+            username: req.user.username,
+          },
+        },
+      });
+    } catch (error) {
+      res.status(500).res(error.message);
+    }
+  }
+);
 module.exports = app;
